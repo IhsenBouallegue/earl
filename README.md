@@ -5,9 +5,21 @@ the call audio and your mic, with no bot joining the call. It transcribes with
 whisper.cpp, works out who said what, and writes notes with a local model in
 LM Studio. Everything runs on your Mac.
 
-## Setup
+## Install
 
-Colleagues install from the release zip, following [docs/INSTALL.md](docs/INSTALL.md). Developers use `./setup.sh`:
+Needs a Mac with Apple silicon and macOS 26.
+
+1. Download the zip from the [latest release](../../releases/latest) and unzip it.
+2. Move **Earl** into the **Applications** folder in your home folder (⇧⌘H in Finder).
+3. Earl isn't notarized, so macOS asks once. In Terminal:
+   `xattr -dr com.apple.quarantine ~/Applications/Earl.app`
+4. Open Earl and follow the setup. It downloads the listening models (about 1.7 GB).
+
+More in [docs/INSTALL.md](docs/INSTALL.md). Earl then updates itself.
+
+## Build from source
+
+Developers use `./setup.sh`:
 
 ```sh
 ./setup.sh      # whisper.cpp, models (~1.6 GB), signing certificate, builds ~/Applications/Earl.app
