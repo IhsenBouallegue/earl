@@ -2,18 +2,33 @@
 
 You need a Mac with Apple silicon and macOS 26. No admin rights needed.
 
-1. Unzip **Earl-….zip**.
+## One command
+
+Open **Terminal** (⌘Space, type Terminal) and paste:
+
+    curl -fsSL https://github.com/IhsenBouallegue/earl/releases/latest/download/install.sh | bash
+
+It downloads the latest Earl, puts it in the **Applications** folder inside your
+home folder and opens it. Earl's setup window takes it from there. Earl lives in
+the menu bar (the little face at the top of the screen) and updates itself.
+
+Why Terminal: Earl isn't notarized by Apple (that costs a developer account), so
+macOS blocks a copy downloaded with a browser. A download made by `curl` isn't
+marked that way, so there is nothing to click through. The script checks the
+download is signed with Earl's certificate before it installs it.
+
+## Without Terminal
+
+1. Download **Earl-….zip** from the [latest release](https://github.com/IhsenBouallegue/earl/releases/latest) and unzip it.
 2. In Finder, press ⇧⌘H (your home folder), make a folder **Applications** if
    there isn't one, and move **Earl** into it.
-3. Earl isn't from the App Store, so macOS asks once. Open **Terminal** and paste:
+3. Double-click Earl and click **Done**. Then open System Settings → Privacy &
+   Security, scroll down and click **Open Anyway** next to Earl.
 
-       xattr -dr com.apple.quarantine ~/Applications/Earl.app
+## Updating and removing
 
-   It tells macOS you trust this copy of Earl.
+Earl checks for updates by itself and asks before installing one. To remove it,
+drag Earl out of the Applications folder; your meetings stay in the **Meetings**
+folder in your home folder.
 
-   (Or: double-click Earl, click **Done**, then System Settings → Privacy &
-   Security → **Open Anyway**.)
-4. Open Earl. It lives in the menu bar (the little face at the top of the screen).
-
-Your meetings stay on your Mac, in your home folder under **Meetings**.
 Before recording a call, tell the others you're taking notes.

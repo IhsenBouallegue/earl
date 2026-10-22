@@ -7,15 +7,15 @@ LM Studio. Everything runs on your Mac.
 
 ## Install
 
-Needs a Mac with Apple silicon and macOS 26.
+Needs a Mac with Apple silicon and macOS 26. Open **Terminal** and paste:
 
-1. Download the zip from the [latest release](../../releases/latest) and unzip it.
-2. Move **Earl** into the **Applications** folder in your home folder (⇧⌘H in Finder).
-3. Earl isn't notarized, so macOS asks once. In Terminal:
-   `xattr -dr com.apple.quarantine ~/Applications/Earl.app`
-4. Open Earl and follow the setup. It downloads the listening models (about 1.7 GB).
+```sh
+curl -fsSL https://github.com/IhsenBouallegue/earl/releases/latest/download/install.sh | bash
+```
 
-More in [docs/INSTALL.md](docs/INSTALL.md). Earl then updates itself.
+That puts Earl in `~/Applications` and opens it; the setup window does the rest
+(about 1.7 GB of listening models). Earl then updates itself. The same command
+updates a copy by hand. Other ways, and why Terminal: [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Build from source
 

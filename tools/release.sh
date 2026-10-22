@@ -66,7 +66,8 @@ if [ -n "$EARL_FEED_URL" ]; then
     [ -z "${EARL_SPARKLE_KEY_FILE:-}" ] || KEYARGS=(--ed-key-file "$EARL_SPARKLE_KEY_FILE")
     "$ROOT/.build/artifacts/sparkle/Sparkle/bin/generate_appcast" ${KEYARGS[@]+"${KEYARGS[@]}"} \
         --download-url-prefix "${EARL_DOWNLOAD_BASE//\{TAG\}/$TAG}/" --maximum-versions 1 "$ROOT/dist"
-    echo "Upload dist/$(basename "$ZIP") and dist/appcast.xml to GitHub Releases (tag $TAG): gh release create $TAG dist/Earl-$VERSION-$BUILD.zip dist/appcast.xml"
+    cp "$ROOT/tools/install.sh" "$ROOT/dist/install.sh"
+    echo "Upload to GitHub Releases (tag $TAG): gh release create $TAG dist/Earl-$VERSION-$BUILD.zip dist/appcast.xml dist/install.sh"
 else
     echo "No EARL_FEED_URL in release.env: no appcast (colleagues update by hand)."
 fi
