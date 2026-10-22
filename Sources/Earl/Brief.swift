@@ -338,13 +338,13 @@ extension Prefs.Key {
 extension Prefs {
     /// "Brief me 10 minutes before a meeting in a series", on by default.
     static var briefNudge: Bool {
-        UserDefaults.standard.object(forKey: Key.briefNudge) as? Bool ?? true
+        Prefs.defaults.object(forKey: Key.briefNudge) as? Bool ?? true
     }
 
     /// Occurrences already nudged, newest last.
     static var briefNudgesSent: [String] {
-        get { UserDefaults.standard.stringArray(forKey: Key.briefNudgesSent) ?? [] }
-        set { UserDefaults.standard.set(Array(newValue.suffix(40)), forKey: Key.briefNudgesSent) }
+        get { Prefs.defaults.stringArray(forKey: Key.briefNudgesSent) ?? [] }
+        set { Prefs.defaults.set(Array(newValue.suffix(40)), forKey: Key.briefNudgesSent) }
     }
 }
 
@@ -420,7 +420,7 @@ final class BriefNudger {
 
 /// Settings → Calls: the nudge before a series meeting.
 struct BriefSettings: View {
-    @AppStorage(Prefs.Key.briefNudge) private var nudge = true
+    @AppStorage(Prefs.Key.briefNudge, store: Prefs.defaults) private var nudge = true
 
     var body: some View {
         Card(title: "Briefs",

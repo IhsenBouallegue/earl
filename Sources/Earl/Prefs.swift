@@ -16,7 +16,7 @@ enum Prefs {
     }
 
     // U-0: demo mode keeps everything under a throwaway home folder.
-    static let supportDir = (DemoMode.home ?? FileManager.default.homeDirectoryForCurrentUser)
+    static let supportDir = (Sandbox.home ?? FileManager.default.homeDirectoryForCurrentUser)
         .appendingPathComponent("Library/Application Support/Earl")
     static let modelsDir = supportDir.appendingPathComponent("models", isDirectory: true)
 
@@ -43,7 +43,7 @@ enum Prefs {
     static let defaultLLMModel = "google/gemma-4-e4b"
 
     static func register() {
-        UserDefaults.standard.register(defaults: [
+        Prefs.defaults.register(defaults: [
             Key.storagePath: defaultStoragePath,
             Key.keepAudio: true,
             Key.textOnly: false,
@@ -55,7 +55,9 @@ enum Prefs {
         ])
     }
 
-    private static var d: UserDefaults { .standard }
+    /// The settings store: Earl's own, or a sandbox copy's file (see Sandbox).
+    static var defaults: UserDefaults { Sandbox.defaults }
+    private static var d: UserDefaults { defaults }
 
     static var storageURL: URL {
         URL(fileURLWithPath: expand(d.string(forKey: Key.storagePath) ?? defaultStoragePath), isDirectory: true)
@@ -73,11 +75,11 @@ enum Prefs {
     static var llmModel: String { d.string(forKey: Key.llmModel) ?? defaultLLMModel }
     /// D-3: a notes model was picked (stored), not just the registered default.
     static var llmModelStored: Bool {
-        d.persistentDomain(forName: Bundle.main.bundleIdentifier ?? "")?[Key.llmModel] != nil
+        d.persistentDomain(forName: Sandbox.domain)?[Key.llmModel] != nil
     }
 
     static func expand(_ path: String) -> String {
-        if let home = DemoMode.home, path == "~" || path.hasPrefix("~/") { // U-0
+        if let home = Sandbox.home, path == "~" || path.hasPrefix("~/") { // U-0
             return home.path + path.dropFirst()
         }
         return (path as NSString).expandingTildeInPath

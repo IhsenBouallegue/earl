@@ -149,8 +149,8 @@ final class ArmedRecorder: ObservableObject {
         var write: (Data?) -> Void
 
         static let standard = Storage(
-            read: { UserDefaults.standard.data(forKey: Prefs.Key.armedRecording) },
-            write: { UserDefaults.standard.set($0, forKey: Prefs.Key.armedRecording) })
+            read: { Prefs.defaults.data(forKey: Prefs.Key.armedRecording) },
+            write: { Prefs.defaults.set($0, forKey: Prefs.Key.armedRecording) })
     }
 
     @Published private(set) var armed: ArmedRecording?
@@ -379,7 +379,7 @@ struct NextMeetingCard: View {
     @EnvironmentObject private var state: AppState
     @ObservedObject var calendar: CalendarService
     @ObservedObject var armed: ArmedRecorder
-    @AppStorage(Prefs.Key.calendarEnabled) private var enabled = true
+    @AppStorage(Prefs.Key.calendarEnabled, store: Prefs.defaults) private var enabled = true
 
     var body: some View {
         TimelineView(.everyMinute) { context in

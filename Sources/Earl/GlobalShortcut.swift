@@ -100,12 +100,12 @@ extension Prefs.Key {
 extension Prefs {
     /// The start/stop shortcut, or nil when turned off.
     static var recordShortcut: KeyCombo? {
-        get { KeyCombo.fromSetting(UserDefaults.standard.string(forKey: Key.recordShortcut)) }
-        set { UserDefaults.standard.set(newValue?.json ?? "", forKey: Key.recordShortcut) }
+        get { KeyCombo.fromSetting(Prefs.defaults.string(forKey: Key.recordShortcut)) }
+        set { Prefs.defaults.set(newValue?.json ?? "", forKey: Key.recordShortcut) }
     }
 
     static var shortcutSound: Bool {
-        UserDefaults.standard.object(forKey: Key.shortcutSound) as? Bool ?? true
+        Prefs.defaults.object(forKey: Key.shortcutSound) as? Bool ?? true
     }
 }
 
@@ -315,8 +315,8 @@ struct ShortcutSettings: View {
 private struct ShortcutCard: View {
     @ObservedObject var shortcut: GlobalShortcut
 
-    @AppStorage(Prefs.Key.recordShortcut) private var stored = KeyCombo.defaultRecord.json
-    @AppStorage(Prefs.Key.shortcutSound) private var sound = true
+    @AppStorage(Prefs.Key.recordShortcut, store: Prefs.defaults) private var stored = KeyCombo.defaultRecord.json
+    @AppStorage(Prefs.Key.shortcutSound, store: Prefs.defaults) private var sound = true
 
     private var combo: Binding<KeyCombo?> {
         Binding(get: { KeyCombo.fromSetting(stored) }, set: { stored = $0?.json ?? "" })

@@ -23,7 +23,7 @@ struct MeetingDetail: View {
     @State private var player = MeetingPlayer()
     /// The conversation beside the notes; hidden, the page is one column. It
     /// comes back by itself when you play a moment or find a word.
-    @AppStorage("showsConversation") private var showsConversation = true
+    @AppStorage("showsConversation", store: Prefs.defaults) private var showsConversation = true
 
     private var job: Job? { state.job(meeting.id) }
 

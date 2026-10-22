@@ -10,7 +10,7 @@ extension Prefs.Key {
 
 extension Prefs {
     static var guessSpeakerNames: Bool {
-        UserDefaults.standard.object(forKey: Key.guessSpeakerNames) as? Bool ?? true
+        Prefs.defaults.object(forKey: Key.guessSpeakerNames) as? Bool ?? true
     }
 }
 
@@ -961,7 +961,7 @@ struct NamesChangedNotice: View {
 
 /// The R2-3 line in the Speakers card.
 struct GuessNamesToggle: View {
-    @AppStorage(Prefs.Key.guessSpeakerNames) private var guess = true
+    @AppStorage(Prefs.Key.guessSpeakerNames, store: Prefs.defaults) private var guess = true
 
     var body: some View {
         Toggle("Guess names from the conversation", isOn: $guess)

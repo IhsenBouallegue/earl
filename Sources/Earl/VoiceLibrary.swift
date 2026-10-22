@@ -13,12 +13,12 @@ extension Prefs.Key {
 extension Prefs {
     static var rememberVoices: Bool {
         // P-1: "Keep only the text" turns voice memory off, whatever was chosen here.
-        get { (UserDefaults.standard.object(forKey: Key.rememberVoices) as? Bool ?? false) && !textOnly }
-        set { UserDefaults.standard.set(newValue, forKey: Key.rememberVoices) }
+        get { (Prefs.defaults.object(forKey: Key.rememberVoices) as? Bool ?? false) && !textOnly }
+        set { Prefs.defaults.set(newValue, forKey: Key.rememberVoices) }
     }
     static var voicesConsentAsked: Bool {
-        get { UserDefaults.standard.object(forKey: Key.voicesConsentAsked) as? Bool ?? false }
-        set { UserDefaults.standard.set(newValue, forKey: Key.voicesConsentAsked) }
+        get { Prefs.defaults.object(forKey: Key.voicesConsentAsked) as? Bool ?? false }
+        set { Prefs.defaults.set(newValue, forKey: Key.voicesConsentAsked) }
     }
     static let voicesURL = supportDir.appendingPathComponent("voices.json")
 }
@@ -422,8 +422,8 @@ struct VoiceConsentPrompt: View {
 
 /// The R3-3 part of the Speakers card: the switch and the voices kept.
 struct VoiceSettings: View {
-    @AppStorage(Prefs.Key.rememberVoices) private var remember = false
-    @AppStorage(Prefs.Key.textOnly) private var textOnly = false // P-1
+    @AppStorage(Prefs.Key.rememberVoices, store: Prefs.defaults) private var remember = false
+    @AppStorage(Prefs.Key.textOnly, store: Prefs.defaults) private var textOnly = false // P-1
     @ObservedObject private var store = VoiceStore.shared
     @State private var offerForget = false
     @State private var confirmForgetAll = false

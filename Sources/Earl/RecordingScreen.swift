@@ -59,7 +59,7 @@ struct RecordingView: View {
     }
 
     static func tilde(_ url: URL) -> String {
-        if let home = DemoMode.home { return url.path.replacingOccurrences(of: home.path, with: "~") } // U-0
+        if let home = Sandbox.home { return url.path.replacingOccurrences(of: home.path, with: "~") } // U-0
         return url.path.replacingOccurrences(of: NSHomeDirectory(), with: "~")
     }
 }

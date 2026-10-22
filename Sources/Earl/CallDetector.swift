@@ -17,13 +17,13 @@ extension Prefs.Key {
 
 extension Prefs {
     static var callStartAction: CallDetectionMachine.StartAction {
-        UserDefaults.standard.string(forKey: Key.callStartAction).flatMap { .init(rawValue: $0) } ?? .ask
+        Prefs.defaults.string(forKey: Key.callStartAction).flatMap { .init(rawValue: $0) } ?? .ask
     }
     static var callEndAction: CallDetectionMachine.EndAction {
-        UserDefaults.standard.string(forKey: Key.callEndAction).flatMap { .init(rawValue: $0) } ?? .ask
+        Prefs.defaults.string(forKey: Key.callEndAction).flatMap { .init(rawValue: $0) } ?? .ask
     }
     static var callAppsOff: Set<String> {
-        CallApps.parseOff(UserDefaults.standard.string(forKey: Key.callAppsOff) ?? "")
+        CallApps.parseOff(Prefs.defaults.string(forKey: Key.callAppsOff) ?? "")
     }
 }
 
@@ -715,10 +715,10 @@ struct CallDetectionSettings: View {
 private struct CallDetectionCard: View {
     @ObservedObject var detector: CallDetector
 
-    @AppStorage(Prefs.Key.callStartAction) private var startAction = CallDetectionMachine.StartAction.ask
-    @AppStorage(Prefs.Key.callEndAction) private var endAction = CallDetectionMachine.EndAction.ask
-    @AppStorage(Prefs.Key.callAppsOff) private var appsOff = ""
-    @AppStorage(Prefs.Key.showOffersOnScreen) private var showOnScreen = true // R2-6
+    @AppStorage(Prefs.Key.callStartAction, store: Prefs.defaults) private var startAction = CallDetectionMachine.StartAction.ask
+    @AppStorage(Prefs.Key.callEndAction, store: Prefs.defaults) private var endAction = CallDetectionMachine.EndAction.ask
+    @AppStorage(Prefs.Key.callAppsOff, store: Prefs.defaults) private var appsOff = ""
+    @AppStorage(Prefs.Key.showOffersOnScreen, store: Prefs.defaults) private var showOnScreen = true // R2-6
 
     var body: some View {
         Card(title: "Call detection",

@@ -186,6 +186,8 @@ final class OnboardingModel: ObservableObject {
     @Published private(set) var whereShown = false
 
     private weak var engine: Engine?
+    /// A rehearsal: a pretend Mac instead of the real one; nothing real is touched or saved.
+    private var rehearsal: SetupRehearsal?
     @Published private var job: Task<Void, Never>?
     private var stopJob: (@MainActor () -> Void)?
     nonisolated(unsafe) private var quitObserver: NSObjectProtocol?
@@ -210,7 +212,7 @@ final class OnboardingModel: ObservableObject {
         self.engine = engine
         engine.refreshLocal()
         let s = engine.setupState
-        let finished = UserDefaults.standard.bool(forKey: Prefs.Key.onboardingFinished) || hasMeetings
+        let finished = Prefs.defaults.bool(forKey: Prefs.Key.onboardingFinished) || hasMeetings
         let flow = OnboardingFlow.resume(s, finishedBefore: finished)
         self.flow = flow
         state = s
@@ -221,9 +223,20 @@ final class OnboardingModel: ObservableObject {
             forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self, RelaunchPlan.resumeOnQuit(downloading: self.downloading) else { return }
-                UserDefaults.standard.set(true, forKey: Prefs.Key.onboardingResumeDownload)
+                Prefs.defaults.set(true, forKey: Prefs.Key.onboardingResumeDownload)
             }
         }
+    }
+
+    /// A walk through the real flow against a pretend Mac (tools/rehearse-setup.sh).
+    init(rehearsal: SetupRehearsal) {
+        self.rehearsal = rehearsal
+        let s = rehearsal.state
+        let flow = OnboardingFlow.resume(s, finishedBefore: false)
+        self.flow = flow
+        state = s
+        pages = OnboardingFlow.pages(s, from: flow.screen)
+        neededBytes = rehearsal.neededBytes
     }
 
     /// U-0: a fixed screen for snapshots; nothing is watched or downloaded.
@@ -296,8 +309,8 @@ final class OnboardingModel: ObservableObject {
     /// Earl looks every second (twice a second while downloading) and moves on by himself.
     func watch() async {
         // Earl restarted for screen audio in the middle of the download: pick it up again.
-        if UserDefaults.standard.bool(forKey: Prefs.Key.onboardingResumeDownload) {
-            UserDefaults.standard.removeObject(forKey: Prefs.Key.onboardingResumeDownload)
+        if rehearsal == nil, Prefs.defaults.bool(forKey: Prefs.Key.onboardingResumeDownload) {
+            Prefs.defaults.removeObject(forKey: Prefs.Key.onboardingResumeDownload)
             refresh()
             let left = SetupGuide.steps(state)
             if left.contains(.models) { startDownload(.models) } else if left.contains(.notes) { startDownload(.notes) }
@@ -310,11 +323,16 @@ final class OnboardingModel: ObservableObject {
         }
     }
 
-    private func refresh() {
-        guard let engine else { return }
-        engine.refreshLocal()
-        state = engine.setupState
-        neededBytes = Self.missingBytes()
+    func refresh() {
+        if let rehearsal {
+            state = rehearsal.state
+            neededBytes = rehearsal.neededBytes
+        } else {
+            guard let engine else { return }
+            engine.refreshLocal()
+            state = engine.setupState
+            neededBytes = Self.missingBytes()
+        }
         guard case .step(let step) = flow.screen, !moving else { return }
         var next = flow
         next.advance(state, modelsDeferred: modelsDeferred)
@@ -348,7 +366,7 @@ final class OnboardingModel: ObservableObject {
         flow = next
         if !pages.contains(next.screen) { pages = OnboardingFlow.pages(state, from: next.screen) }
         if modelsLater { pages = OnboardingFlow.modelsLast(pages) }
-        if next.screen == .done { UserDefaults.standard.set(true, forKey: Prefs.Key.onboardingFinished) }
+        if next.screen == .done, rehearsal == nil { Prefs.defaults.set(true, forKey: Prefs.Key.onboardingFinished) }
     }
 
     // MARK: Actions
@@ -360,17 +378,22 @@ final class OnboardingModel: ObservableObject {
             startDownload(.notes) // D-3: the built-in note writer for this Mac's memory
         case .models: startDownload(.models)
         case .downloading, .checking: break
-        case .microphone: Task { await engine?.requestMicrophone(); refresh() }
-        case .microphoneOff: Engine.openPrivacySettings("Privacy_Microphone")
+        case .microphone:
+            if let rehearsal { rehearsal.grantMicrophone(); refresh() } else { Task { await engine?.requestMicrophone(); refresh() } }
+        case .microphoneOff:
+            // Rehearsal: as if the switch was turned on in System Settings.
+            if let rehearsal { rehearsal.grantMicrophone(); refresh() } else { Engine.openPrivacySettings("Privacy_Microphone") }
         case .admin:
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(OnboardingCopy.itNote, forType: .string)
             copiedNote = true
-        case .screenAudio: engine?.requestScreenAudio(); refresh()
+        case .screenAudio:
+            if let rehearsal { rehearsal.askScreenAudio() } else { engine?.requestScreenAudio() }
+            refresh()
         case .relaunch:
             // A restart now would throw the download away: wait for it, then restart by itself.
-            if relaunchPlan.press(downloading: downloading, busy: Self.appBusy()) { engine?.relaunch() } else { relaunchWhenFree() }
-        case .done: UserDefaults.standard.set(true, forKey: Prefs.Key.onboardingFinished)
+            if relaunchPlan.press(downloading: downloading, busy: Self.appBusy()) { relaunchNow() } else { relaunchWhenFree() }
+        case .done: if rehearsal == nil { Prefs.defaults.set(true, forKey: Prefs.Key.onboardingFinished) }
         }
     }
 
@@ -385,7 +408,7 @@ final class OnboardingModel: ObservableObject {
         case .relaunch: Engine.openPrivacySettings("Privacy_ScreenCapture")
         case .done: withAnimation(.easeOut(duration: 0.2)) { whereShown = true }
         case .notes:
-            UserDefaults.standard.set(false, forKey: Prefs.Key.summariesEnabled) // transcripts only
+            if rehearsal == nil { Prefs.defaults.set(false, forKey: Prefs.Key.summariesEnabled) } // transcripts only
             if queuedStep == .notes { queuedStep = nil }
             move(to: advanced())
         default: break
@@ -439,8 +462,8 @@ final class OnboardingModel: ObservableObject {
                 download = .failed(OnboardingCopy.transcriberMissing)
                 return
             }
-            work = modelsDownload()
-        case .notes: work = notesModelDownload()
+            work = rehearsal?.download(.models) ?? modelsDownload()
+        case .notes: work = rehearsal?.download(.notes) ?? notesModelDownload()
         default: work = nil
         }
         guard let work else { return }
@@ -490,6 +513,11 @@ final class OnboardingModel: ObservableObject {
         relaunchWhenFree()
     }
 
+    /// The restart. A rehearsal only pretends: the permission is "granted" as after the real one.
+    private func relaunchNow() {
+        if let rehearsal { rehearsal.relaunch(); refresh() } else { engine?.relaunch() }
+    }
+
     /// Restarts once the downloads are done and no call is being recorded or
     /// meeting processed; looks again every few seconds while one is.
     private func relaunchWhenFree() {
@@ -498,7 +526,7 @@ final class OnboardingModel: ObservableObject {
             defer { relaunchLoop = nil; relaunchHeld = false }
             while relaunchPlan.waiting && !downloading {
                 if relaunchPlan.shouldRelaunch(downloading: downloading, busy: Self.appBusy()) {
-                    engine?.relaunch()
+                    relaunchNow()
                     return
                 }
                 relaunchHeld = true
@@ -514,7 +542,7 @@ final class OnboardingModel: ObservableObject {
         let fm = FileManager.default
         if !fm.fileExists(atPath: Prefs.whisperModel) {
             // The chosen model is gone: use the recommended one.
-            UserDefaults.standard.set(Self.turbo.path, forKey: Prefs.Key.whisperModel)
+            Prefs.defaults.set(Self.turbo.path, forKey: Prefs.Key.whisperModel)
         }
         let files = [Self.turbo, WhisperModelOption.vad].filter { option in
             !fm.fileExists(atPath: option == Self.turbo ? Prefs.whisperModel : option.path)
@@ -586,7 +614,7 @@ final class OnboardingModel: ObservableObject {
     /// "Use a File I Have…": files a colleague passed on, matched by checksum.
     /// Only this window's own imports report here (not an old error from Settings).
     private func chooseFiles() {
-        guard let engine, job == nil, importJob == nil else { return }
+        guard rehearsal == nil, let engine, job == nil, importJob == nil else { return }
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
@@ -643,7 +671,8 @@ extension OnboardingModel {
 
     static func forWindow(_ engine: Engine, hasMeetings: Bool) -> OnboardingModel {
         if let running, running.job != nil || running.relaunchPlan.waiting { return running }
-        let model = OnboardingModel(engine: engine, hasMeetings: hasMeetings)
+        let model = SetupRehearsal.requested.map { OnboardingModel(rehearsal: SetupRehearsal($0)) }
+            ?? OnboardingModel(engine: engine, hasMeetings: hasMeetings)
         running = model
         return model
     }
@@ -658,7 +687,9 @@ enum Onboarding {
     @MainActor
     static func shouldOpenAtLaunch(_ engine: Engine) -> Bool {
         guard Bundle.main.bundleIdentifier != nil, !DemoMode.isActive else { return false }
-        let d = UserDefaults.standard
+        if SetupRehearsal.requested != nil { return true } // tools/rehearse-setup.sh
+        if Sandbox.isActive { return false } // a copy skips the first-run window unless rehearsing
+        let d = Prefs.defaults
         let restarted = d.bool(forKey: Prefs.Key.screenAudioAsked)
         d.removeObject(forKey: Prefs.Key.screenAudioAsked)
         if restarted { return true } // "I'll reopen this window right after."

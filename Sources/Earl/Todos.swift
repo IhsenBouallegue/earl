@@ -438,7 +438,7 @@ struct TodosSidebarRow: View {
 struct TodosView: View {
     @EnvironmentObject private var state: AppState
     @ObservedObject var reminders: RemindersSync
-    @AppStorage(Prefs.Key.userName) private var userName = ""
+    @AppStorage(Prefs.Key.userName, store: Prefs.defaults) private var userName = ""
 
     private var myOpen: [ActionItem] {
         state.actionItems.filter { !$0.done && ActionItems.isMine(owner: $0.owner, userName: userName) }

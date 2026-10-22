@@ -17,17 +17,17 @@ extension Prefs.Key {
 
 extension Prefs {
     /// Only has an effect once calendar access is allowed.
-    static var calendarEnabled: Bool { UserDefaults.standard.object(forKey: Key.calendarEnabled) as? Bool ?? true }
+    static var calendarEnabled: Bool { Prefs.defaults.object(forKey: Key.calendarEnabled) as? Bool ?? true }
     static var calendarsOff: Set<String> {
-        CallApps.parseOff(UserDefaults.standard.string(forKey: Key.calendarsOff) ?? "")
+        CallApps.parseOff(Prefs.defaults.string(forKey: Key.calendarsOff) ?? "")
     }
     /// Your name, typed in Settings or learned from the calendar. `nil` when unknown.
     static var userName: String? {
         get {
-            let name = UserDefaults.standard.string(forKey: Key.userName)?.trimmingCharacters(in: .whitespaces) ?? ""
+            let name = Prefs.defaults.string(forKey: Key.userName)?.trimmingCharacters(in: .whitespaces) ?? ""
             return name.isEmpty ? nil : name
         }
-        set { UserDefaults.standard.set(newValue, forKey: Key.userName) }
+        set { Prefs.defaults.set(newValue, forKey: Key.userName) }
     }
 }
 
@@ -801,9 +801,9 @@ struct CalendarSettings: View {
 private struct CalendarCard: View {
     @ObservedObject var calendar: CalendarService
 
-    @AppStorage(Prefs.Key.calendarEnabled) private var enabled = true
-    @AppStorage(Prefs.Key.calendarsOff) private var calendarsOff = ""
-    @AppStorage(Prefs.Key.userName) private var userName = ""
+    @AppStorage(Prefs.Key.calendarEnabled, store: Prefs.defaults) private var enabled = true
+    @AppStorage(Prefs.Key.calendarsOff, store: Prefs.defaults) private var calendarsOff = ""
+    @AppStorage(Prefs.Key.userName, store: Prefs.defaults) private var userName = ""
 
     var body: some View {
         Card(title: "Calendar",

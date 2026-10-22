@@ -347,11 +347,11 @@ extension Prefs.Key {
 
 extension Prefs {
     static var notesLanguage: String {
-        UserDefaults.standard.string(forKey: Key.notesLanguage) ?? NotesLanguage.automatic
+        Prefs.defaults.string(forKey: Key.notesLanguage) ?? NotesLanguage.automatic
     }
     /// The model for name guessing; empty means the notes model.
     static var nameModel: String {
-        let id = UserDefaults.standard.string(forKey: Key.nameModel) ?? ""
+        let id = Prefs.defaults.string(forKey: Key.nameModel) ?? ""
         // "Same as notes": the model Earl writes notes with (D-3: Ollama's, or the one it chose).
         return id.isEmpty ? NotesEngine.model(for: NotesEngine.current, fallback: llmModel) : id
     }
@@ -362,12 +362,12 @@ extension Prefs {
     static func notesThinking(_ model: String) -> Bool {
         // D-3: the built-in note writers never think (`reasoning_effort: "none"`); that's how they were chosen.
         if BuiltInModel.all.contains(where: { $0.id == model }) { return false }
-        return (UserDefaults.standard.stringArray(forKey: Key.thinkingModels) ?? []).contains(model)
+        return (Prefs.defaults.stringArray(forKey: Key.thinkingModels) ?? []).contains(model)
     }
     static func setNotesThinking(_ on: Bool, for model: String) {
-        var list = Set(UserDefaults.standard.stringArray(forKey: Key.thinkingModels) ?? [])
+        var list = Set(Prefs.defaults.stringArray(forKey: Key.thinkingModels) ?? [])
         if on { list.insert(model) } else { list.remove(model) }
-        UserDefaults.standard.set(list.sorted(), forKey: Key.thinkingModels)
+        Prefs.defaults.set(list.sorted(), forKey: Key.thinkingModels)
     }
 }
 
@@ -380,16 +380,16 @@ struct ModelSpeed: Equatable {
     var secondsPer30Minutes: Double
 
     static func all() -> [String: ModelSpeed] {
-        let raw = UserDefaults.standard.dictionary(forKey: Prefs.Key.modelSpeeds) as? [String: [Double]] ?? [:]
+        let raw = Prefs.defaults.dictionary(forKey: Prefs.Key.modelSpeeds) as? [String: [Double]] ?? [:]
         return raw.compactMapValues { $0.count == 2 ? ModelSpeed(tokensPerSecond: $0[0], secondsPer30Minutes: $0[1]) : nil }
     }
 
     static func record(model: String, tokensPerSecond: Double?, seconds: Double, meetingSeconds: Double) {
         // Very short meetings say little about longer ones; the fixed cost dominates.
         guard meetingSeconds >= 120 else { return }
-        var raw = UserDefaults.standard.dictionary(forKey: Prefs.Key.modelSpeeds) as? [String: [Double]] ?? [:]
+        var raw = Prefs.defaults.dictionary(forKey: Prefs.Key.modelSpeeds) as? [String: [Double]] ?? [:]
         raw[model] = [tokensPerSecond ?? 0, seconds * 1800 / meetingSeconds]
-        UserDefaults.standard.set(raw, forKey: Prefs.Key.modelSpeeds)
+        Prefs.defaults.set(raw, forKey: Prefs.Key.modelSpeeds)
     }
 
     var text: String {
@@ -430,8 +430,8 @@ struct NotesModelList: View {
     let models: [LLMModel]
     /// D-3: the model in use (Ollama's or the recommended one can differ from the setting).
     var active: String?
-    @AppStorage(Prefs.Key.llmModel) private var llmModel = Prefs.defaultLLMModel
-    @AppStorage(Prefs.Key.llmURL) private var llmURL = Prefs.defaultLLMURL
+    @AppStorage(Prefs.Key.llmModel, store: Prefs.defaults) private var llmModel = Prefs.defaultLLMModel
+    @AppStorage(Prefs.Key.llmURL, store: Prefs.defaults) private var llmURL = Prefs.defaultLLMURL
     @State private var details: [String: LMStudioModel] = [:]
     @State private var recommended: String?
 
@@ -484,10 +484,10 @@ struct NotesOptions: View {
     let models: [LLMModel]
     /// D-3: the model in use; the setting when nil.
     var active: String?
-    @AppStorage(Prefs.Key.notesLanguage) private var notesLanguage = NotesLanguage.automatic
-    @AppStorage(Prefs.Key.nameModel) private var nameModel = ""
-    @AppStorage(Prefs.Key.llmModel) private var llmModel = Prefs.defaultLLMModel
-    @AppStorage(Prefs.Key.llmURL) private var llmURL = Prefs.defaultLLMURL
+    @AppStorage(Prefs.Key.notesLanguage, store: Prefs.defaults) private var notesLanguage = NotesLanguage.automatic
+    @AppStorage(Prefs.Key.nameModel, store: Prefs.defaults) private var nameModel = ""
+    @AppStorage(Prefs.Key.llmModel, store: Prefs.defaults) private var llmModel = Prefs.defaultLLMModel
+    @AppStorage(Prefs.Key.llmURL, store: Prefs.defaults) private var llmURL = Prefs.defaultLLMURL
     @State private var thinking = false
     private var model: String { active ?? llmModel }
     @State private var canThink = false

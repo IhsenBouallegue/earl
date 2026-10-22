@@ -11,9 +11,9 @@ extension Prefs.Key {
 }
 
 extension Prefs {
-    static var separateSpeakers: Bool { UserDefaults.standard.object(forKey: Key.separateSpeakers) as? Bool ?? true }
+    static var separateSpeakers: Bool { Prefs.defaults.object(forKey: Key.separateSpeakers) as? Bool ?? true }
     static var separateMicSpeakers: Bool {
-        UserDefaults.standard.object(forKey: Key.separateMicSpeakers) as? Bool ?? false
+        Prefs.defaults.object(forKey: Key.separateMicSpeakers) as? Bool ?? false
     }
     /// FluidAudio keeps its repo in a folder of its own under this one.
     static let speakerModelsDir = modelsDir.appendingPathComponent("speakers", isDirectory: true)
@@ -156,8 +156,8 @@ final class SpeakerModel: ObservableObject {
 
 /// The Speakers card under the hood.
 struct SpeakerSettings: View {
-    @AppStorage(Prefs.Key.separateSpeakers) private var separate = true
-    @AppStorage(Prefs.Key.separateMicSpeakers) private var separateMic = false
+    @AppStorage(Prefs.Key.separateSpeakers, store: Prefs.defaults) private var separate = true
+    @AppStorage(Prefs.Key.separateMicSpeakers, store: Prefs.defaults) private var separateMic = false
     @ObservedObject private var model = SpeakerModel.shared
 
     var body: some View {

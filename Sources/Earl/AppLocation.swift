@@ -32,7 +32,7 @@ enum AppLocation {
     /// Call once, from the launch path; it returns after the modal resolves.
     /// `.moving` means the moved copy is opening and this one is about to quit.
     @MainActor static func offerMove(onOpenFailed: @escaping @MainActor () -> Void) -> Outcome {
-        guard Bundle.main.bundleIdentifier != nil, !DemoMode.isActive, !asked else { return .stay }
+        guard Bundle.main.bundleIdentifier != nil, !DemoMode.isActive, !Sandbox.isActive, !asked else { return .stay }
         asked = true
         let here = Bundle.main.bundleURL.resolvingSymlinksInPath()
         let home = FileManager.default.homeDirectoryForCurrentUser.resolvingSymlinksInPath()

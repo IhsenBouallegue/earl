@@ -13,7 +13,7 @@ extension Prefs.Key {
 
 extension Prefs {
     static var showOffersOnScreen: Bool {
-        UserDefaults.standard.object(forKey: Key.showOffersOnScreen) as? Bool ?? true
+        Prefs.defaults.object(forKey: Key.showOffersOnScreen) as? Bool ?? true
     }
 }
 

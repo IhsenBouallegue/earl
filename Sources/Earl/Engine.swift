@@ -168,7 +168,7 @@ final class Engine: ObservableObject {
         CGRequestScreenCaptureAccess()
         Self.openPrivacySettings("Privacy_ScreenCapture")
         screenAudioAskedThisRun = true
-        UserDefaults.standard.set(true, forKey: Prefs.Key.screenAudioAsked)
+        Prefs.defaults.set(true, forKey: Prefs.Key.screenAudioAsked)
     }
 
     static func openPrivacySettings(_ pane: String) {
@@ -318,7 +318,7 @@ final class Engine: ObservableObject {
                       let path = Self.whisperPreference(afterImporting: option,
                                                         chosenExists: FileManager.default.fileExists(atPath: Prefs.whisperModel)) {
                 // Like a download: the chosen model is gone, so the one just added becomes it.
-                UserDefaults.standard.set(path, forKey: Prefs.Key.whisperModel)
+                Prefs.defaults.set(path, forKey: Prefs.Key.whisperModel)
             }
             self.refreshLocal()
             if failure == nil, BuiltInModel.matching(sha256: hash) != nil { await self.refreshNotesBackend() }

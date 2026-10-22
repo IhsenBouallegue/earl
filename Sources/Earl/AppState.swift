@@ -103,13 +103,15 @@ final class AppState: ObservableObject {
         }
         resumeInterrupted()
         if Prefs.textOnly { applyTextOnly() } // P-1: audio left by a quit mid-processing
+        Task { await engine.refresh(meetings: meetings) }
+        // A sandbox copy leaves the system-wide things to the real Earl.
+        guard !Sandbox.isActive else { return }
         // R1-1: registered here so the shortcut works before any window opens.
         shortcut.onPress = { [weak self] in self?.shortcutPressed() }
         shortcut.start()
         if Bundle.main.bundleIdentifier != nil {
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         }
-        Task { await engine.refresh(meetings: meetings) }
         // R1-2: offer to record calls, and to stop when they end.
         callDetector.start(record: { [weak self] in self?.startRecording() },
                            stop: { [weak self] in self?.stopRecording() })

@@ -24,3 +24,11 @@ export; fix what it reports, never loosen its allowlists to get past it.
 Optionally keep extra regexes for names you know in `~/.config/earl/private-patterns`.
 
 New JSON fields are optional with defaults; never rename or retype a field.
+
+## Settings and sandbox copies
+
+Read and write settings through `Prefs.defaults` (and `@AppStorage(..., store: Prefs.defaults)`),
+never `UserDefaults.standard`, and keep paths under `Prefs.supportDir` / `Prefs.expand`. That is
+what lets `tools/sandbox.sh` run copies of Earl with data of their own beside the real one.
+System-wide things (shortcut, call detection, notifications, updates) start only when
+`Sandbox.isActive` is false.

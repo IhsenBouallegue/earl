@@ -147,7 +147,7 @@ private struct Sidebar: View {
     @Binding var query: String
     @Binding var searching: Bool
 
-    @AppStorage(Prefs.Key.userName) private var userName = ""
+    @AppStorage(Prefs.Key.userName, store: Prefs.defaults) private var userName = ""
     @FocusState private var focus: Focus?
     @Namespace private var selectionCard
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -526,7 +526,7 @@ private struct SidebarNextMeeting: View {
     @EnvironmentObject private var state: AppState
     @ObservedObject var calendar: CalendarService
     @ObservedObject var armed: ArmedRecorder
-    @AppStorage(Prefs.Key.calendarEnabled) private var enabled = true
+    @AppStorage(Prefs.Key.calendarEnabled, store: Prefs.defaults) private var enabled = true
 
     static let lead: TimeInterval = 30 * 60
 

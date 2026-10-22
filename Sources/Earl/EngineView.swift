@@ -6,14 +6,14 @@ struct EngineView: View {
     @EnvironmentObject private var state: AppState
     @EnvironmentObject private var engine: Engine
 
-    @AppStorage(Prefs.Key.storagePath) private var storagePath = Prefs.defaultStoragePath
-    @AppStorage(Prefs.Key.keepAudio) private var keepAudio = true
-    @AppStorage(Prefs.Key.textOnly) private var textOnly = false // P-1
-    @AppStorage(Prefs.Key.whisperModel) private var whisperModel = Prefs.defaultWhisperModel
-    @AppStorage(Prefs.Key.language) private var language = Prefs.defaultLanguage
-    @AppStorage(Prefs.Key.summariesEnabled) private var summariesEnabled = true
-    @AppStorage(Prefs.Key.llmURL) private var llmURL = Prefs.defaultLLMURL
-    @AppStorage(Prefs.Key.llmModel) private var llmModel = Prefs.defaultLLMModel
+    @AppStorage(Prefs.Key.storagePath, store: Prefs.defaults) private var storagePath = Prefs.defaultStoragePath
+    @AppStorage(Prefs.Key.keepAudio, store: Prefs.defaults) private var keepAudio = true
+    @AppStorage(Prefs.Key.textOnly, store: Prefs.defaults) private var textOnly = false // P-1
+    @AppStorage(Prefs.Key.whisperModel, store: Prefs.defaults) private var whisperModel = Prefs.defaultWhisperModel
+    @AppStorage(Prefs.Key.language, store: Prefs.defaults) private var language = Prefs.defaultLanguage
+    @AppStorage(Prefs.Key.summariesEnabled, store: Prefs.defaults) private var summariesEnabled = true
+    @AppStorage(Prefs.Key.llmURL, store: Prefs.defaults) private var llmURL = Prefs.defaultLLMURL
+    @AppStorage(Prefs.Key.llmModel, store: Prefs.defaults) private var llmModel = Prefs.defaultLLMModel
 
     /// The main window draws the masthead itself, edge to edge, like every page.
     var showsMasthead = true

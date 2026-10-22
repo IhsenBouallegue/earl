@@ -89,7 +89,7 @@ extension AppState {
 /// The Privacy card in Settings: the one switch, and what it means.
 struct PrivacySettings: View {
     @EnvironmentObject private var state: AppState
-    @AppStorage(Prefs.Key.textOnly) private var textOnly = false
+    @AppStorage(Prefs.Key.textOnly, store: Prefs.defaults) private var textOnly = false
     @State private var pending: Privacy.Cleanup?
 
     var body: some View {

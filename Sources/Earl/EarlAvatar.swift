@@ -266,7 +266,7 @@ extension Prefs.Key {
 
 extension Prefs {
     static var earlSeenDays: [String] {
-        get { UserDefaults.standard.stringArray(forKey: Key.earlSeenDays) ?? [] }
-        set { UserDefaults.standard.set(newValue, forKey: Key.earlSeenDays) }
+        get { Prefs.defaults.stringArray(forKey: Key.earlSeenDays) ?? [] }
+        set { Prefs.defaults.set(newValue, forKey: Key.earlSeenDays) }
     }
 }

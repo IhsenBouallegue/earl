@@ -11,7 +11,7 @@ extension Prefs.Key {
 
 extension Prefs {
     /// The vocabulary as typed in Settings: one term per line (commas work too).
-    static var vocabulary: String { UserDefaults.standard.string(forKey: Key.vocabulary) ?? "" }
+    static var vocabulary: String { Prefs.defaults.string(forKey: Key.vocabulary) ?? "" }
     static var vocabularyTerms: [String] { WhisperPrompt.terms(from: vocabulary) }
 }
 
@@ -260,7 +260,7 @@ enum WhisperPrompt {
 
 /// The Vocabulary card under the hood.
 struct VocabularySettings: View {
-    @AppStorage(Prefs.Key.vocabulary) private var vocabulary = ""
+    @AppStorage(Prefs.Key.vocabulary, store: Prefs.defaults) private var vocabulary = ""
 
     var body: some View {
         let terms = WhisperPrompt.terms(from: vocabulary)
