@@ -1,0 +1,21 @@
+[
+  {
+    "citations" : [
+      {
+        "label" : "Tue 9:41",
+        "meetingID" : "meeting-a",
+        "seconds" : 9
+      }
+    ],
+    "date" : "2026-09-21T14:13:20Z",
+    "id" : "00000000-0000-0000-0000-000000000001",
+    "notFound" : false,
+    "question" : "Who sends the plan?",
+    "scope" : {
+      "meeting" : {
+        "_0" : "meeting-a"
+      }
+    },
+    "text" : "Ben sends the plan."
+  }
+]

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Blocks a commit that would put real-world details into the public files.
+# Enabled by: git config core.hooksPath .githooks   (setup.sh does it)
+exec "$(git rev-parse --show-toplevel)/tools/check-public.sh"

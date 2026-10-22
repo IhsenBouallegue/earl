@@ -1,0 +1,57 @@
+{
+  "attendees" : [
+    {
+      "email" : "anna@example.com",
+      "isMe" : true,
+      "name" : "Anna"
+    },
+    {
+      "email" : "ben@example.com",
+      "isMe" : false,
+      "name" : "Ben"
+    },
+    {
+      "isMe" : false,
+      "name" : "Chris"
+    }
+  ],
+  "calendarEnd" : "2026-09-21T14:43:20Z",
+  "calendarEventID" : "event-1",
+  "calendarStart" : "2026-09-21T14:13:20Z",
+  "calendarTitle" : "Planning sync",
+  "callApp" : "Example Call",
+  "callAppBundleID" : "com.example.call",
+  "diarizationSeconds" : 4.5,
+  "duration" : 95,
+  "echoRemovedSeconds" : 0,
+  "error" : "Example error text",
+  "headline" : "The plan is set.",
+  "language" : "en",
+  "meetingURL" : "https://example.com/call/1",
+  "microphone" : "Example Microphone",
+  "namesChangedSinceSummary" : false,
+  "notesKind" : "decision",
+  "notesKindByUser" : false,
+  "organizer" : "Anna",
+  "outputDevice" : "Example Speakers",
+  "speakerCount" : 3,
+  "speakerModel" : "example-diarizer",
+  "speakerNote" : "Example note",
+  "startedAt" : "2026-09-21T14:13:20Z",
+  "status" : "done",
+  "summaryContext" : 8192,
+  "summaryContextByEarl" : true,
+  "summaryModel" : "example-llm",
+  "summarySeconds" : 8.25,
+  "summaryTokensPerSecond" : 40.5,
+  "title" : "Planning sync",
+  "titleIsDefault" : false,
+  "transcriptionModel" : "example-whisper",
+  "transcriptionSeconds" : 12.5,
+  "usedSpeakers" : true,
+  "vocabularyTerms" : [
+    "Roadmap",
+    "Sprint"
+  ],
+  "whosWhoDismissed" : false
+}

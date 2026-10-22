@@ -1,0 +1,31 @@
+# Hosts and mail domains that may appear in the public repo. A name matches
+# itself and any subdomain. Everything else fails tools/check-public.sh.
+# Fictional placeholders
+example.com
+example.org
+example.net
+example.de
+acme.com
+acme-labs.de
+contoso.com
+partner.com
+partner.de
+x.com
+# Free mail providers (the code tells them from company domains)
+gmail.com
+web.de
+# Public services Earl talks about or links to
+github.com
+huggingface.co
+microsoft.com
+live.com
+google.com
+zoom.us
+webex.com
+apple.com
+w3.org
+sparkle-project.org
+localhost
+127.0.0.1
+outlook.com
+test

@@ -1,0 +1,45 @@
+[
+  {
+    "avatar" : "glasses",
+    "embedding" : [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "evidence" : "Welcome to the planning sync.",
+    "id" : "S1",
+    "name" : "Anna",
+    "nameSource" : "confirmed",
+    "seconds" : 40,
+    "track" : "Me"
+  },
+  {
+    "embedding" : [
+      0.4,
+      0.3,
+      0.2,
+      0.1
+    ],
+    "id" : "S2",
+    "name" : "Ben",
+    "nameSource" : "voice",
+    "seconds" : 30,
+    "track" : "Them"
+  },
+  {
+    "avatar" : "hat",
+    "embedding" : [
+      0.5,
+      0.5,
+      0.1,
+      0.1
+    ],
+    "evidence" : "I can take the second one.",
+    "id" : "S3",
+    "name" : "Chris",
+    "nameSource" : "guessed",
+    "seconds" : 20,
+    "track" : "Them"
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "end" : 4,
+    "speaker" : "Me",
+    "speakerID" : "S1",
+    "start" : 0,
+    "text" : "Welcome to the planning sync."
+  },
+  {
+    "end" : 9,
+    "speaker" : "Them",
+    "speakerID" : "S2",
+    "start" : 4,
+    "text" : "Thanks, I have the first item."
+  },
+  {
+    "end" : 15,
+    "speaker" : "Them",
+    "speakerID" : "S3",
+    "start" : 9,
+    "text" : "I can take the second one."
+  }
+]
