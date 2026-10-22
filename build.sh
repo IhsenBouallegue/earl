@@ -9,7 +9,8 @@ DEST="$HOME/Applications/Earl.app"
 swift build -c release --package-path "$ROOT"
 
 VERSION="$(cat "$ROOT/VERSION")"
-BUILD="$(git -C "$ROOT" rev-list --count HEAD)"
+# 175 = commits the project had before its history was reset; updates need a rising build number.
+BUILD="$(( $(git -C "$ROOT" rev-list --count HEAD) + 175 ))"
 WHISPER_VERSION="$(cat "$ROOT/tools/whisper.version")"
 WHISPER="$ROOT/vendor/bin/whisper-cli"
 if [ ! -x "$WHISPER" ] || [ "$(cat "$ROOT/vendor/whisper-version" 2>/dev/null)" != "$WHISPER_VERSION" ]; then
